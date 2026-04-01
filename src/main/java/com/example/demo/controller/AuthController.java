@@ -1,45 +1,39 @@
 package com.example.demo.controller;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 import com.example.demo.Auth.Login;
 import com.example.demo.model.Cliente;
-import com.example.demo.repository.ClienteRepository;
-
-import java.util.Optional;
+import com.example.demo.services.AuthService;
 
 @RestController
 @RequestMapping("/auth")
 @CrossOrigin(origins = "http://localhost:3000")
 public class AuthController {
 
-    @Autowired
-    private ClienteRepository clienteRepository;
+    private final AuthService authService;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    public AuthController(AuthService authService) {
+        this.authService = authService;
+    }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody Login login) {
+    public ResponseEntity<?> login(@RequestBody Login loginData) {
 
-        Optional<Cliente> clienteOpt = clienteRepository.findByCpf(login.getCpf());
+        Login login = new Login.Builder()
+                .email(loginData.getEmail())
+                .senha(loginData.getSenha())
+                .build();
 
-        if (clienteOpt.isEmpty()) {
-            return ResponseEntity.status(404).body("Usuário não encontrado");
+        try {
+            Cliente cliente = authService.verificarLogin(login);
+            return ResponseEntity.ok(cliente);
+        } catch (RuntimeException e) {
+            String msg = e.getMessage();
+            if (msg.contains("não encontrado")) {
+                return ResponseEntity.status(404).body(msg);
+            }
+            return ResponseEntity.status(401).body(msg);
         }
-
-        Cliente cliente = clienteOpt.get();
-
-        if (!passwordEncoder.matches(login.getSenha(), cliente.getSenha())) {
-            return ResponseEntity.status(401).body("Senha inválida");
-        }
-
-        return ResponseEntity.ok(cliente);
     }
 }

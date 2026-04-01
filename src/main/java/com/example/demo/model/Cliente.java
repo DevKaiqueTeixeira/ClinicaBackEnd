@@ -16,13 +16,13 @@ public class Cliente {
 	@Column(nullable = false, unique = true)
 	private String cpf;
 
-	@Column(nullable = false)
+	@Column(nullable = false, unique = true)
 	private String email;
 
 	@Column(nullable = false)
 	private String senha;
 
-	@Column(nullable = false)
+	@Column(nullable = true)
 	private String telefone;
 
 	protected Cliente() {

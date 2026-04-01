@@ -1,18 +1,21 @@
 package com.example.demo.services;
 
+import com.example.demo.DAO.ClienteDAO;
 import com.example.demo.model.Cliente;
-import com.example.demo.repository.ClienteRepository;
+
+import java.util.Optional;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 public class ClienteService {
 
-    private final ClienteRepository repository;
+    private final ClienteDAO clienteDAO;
     private final PasswordEncoder passwordEncoder;
 
-    public ClienteService(ClienteRepository repository, PasswordEncoder passwordEncoder) {
-        this.repository = repository;
+    public ClienteService(ClienteDAO clienteDAO, PasswordEncoder passwordEncoder) {
+        this.clienteDAO = clienteDAO;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -30,8 +33,12 @@ public class ClienteService {
 
     public Cliente salvar(Cliente cliente) {
 
-        if (repository.findByCpf(cliente.getCpf()).isPresent()) {
+        if (clienteDAO.buscarPorCpf(cliente.getCpf()).isPresent()) {
             throw new RuntimeException("CPF já cadastrado");
+        }
+
+        if (clienteDAO.buscarPorEmail(cliente.getEmail()).isPresent()) {
+            throw new RuntimeException("E-mail já cadastrado");
         }
 
         if (cliente.getSenha() == null || contarLetras(cliente.getSenha()) < 3) {
@@ -46,10 +53,29 @@ public class ClienteService {
                 .telefone(cliente.getTelefone())
                 .build();
 
-        return repository.save(novoCliente);
+        return clienteDAO.salvar(novoCliente);
     }
 
     public Iterable<Cliente> listar() {
-        return repository.findAll();
+        return clienteDAO.listarTodos();
+    }
+
+    public Cliente loginComGoogle(String email, String nome) {
+
+        Optional<Cliente> clienteExistente = clienteDAO.buscarPorEmail(email);
+
+        if (clienteExistente.isPresent()) {
+            return clienteExistente.get();
+        }
+
+        Cliente novo = new Cliente.Builder()
+                .nome(nome)
+                .email(email)
+                .cpf("GOOGLE_" + email)
+                .senha("GOOGLE_LOGIN")
+                .telefone(null)
+                .build();
+
+        return clienteDAO.salvar(novo);
     }
 }

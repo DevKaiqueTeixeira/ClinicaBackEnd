@@ -5,10 +5,11 @@ import com.example.demo.services.ClienteService;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 @RequestMapping("/clientes")
 public class ClienteController {
 
@@ -30,8 +31,19 @@ public class ClienteController {
         }
     }
 
-    @GetMapping
-    public Iterable<Cliente> listar() {
-        return service.listar();
+    @GetMapping("/user")
+    public ResponseEntity<?> user(OAuth2AuthenticationToken auth) {
+
+        if (auth == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Não autenticado");
+        }
+
+        String email = auth.getPrincipal().getAttribute("email");
+        String nome = auth.getPrincipal().getAttribute("name");
+
+        Cliente cliente = service.loginComGoogle(email, nome);
+
+        return ResponseEntity.ok(cliente);
     }
+
 }
