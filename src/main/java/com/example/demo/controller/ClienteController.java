@@ -3,9 +3,10 @@ package com.example.demo.controller;
 import com.example.demo.model.Cliente;
 import com.example.demo.services.ClienteService;
 
+import jakarta.servlet.http.HttpSession;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -32,16 +33,14 @@ public class ClienteController {
     }
 
     @GetMapping("/user")
-    public ResponseEntity<?> user(OAuth2AuthenticationToken auth) {
+    public ResponseEntity<?> user(HttpSession session) {
 
-        if (auth == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Não autenticado");
+        Cliente cliente = (Cliente) session.getAttribute("usuarioLogado");
+
+        if (cliente == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Não autenticado");
         }
-
-        String email = auth.getPrincipal().getAttribute("email");
-        String nome = auth.getPrincipal().getAttribute("name");
-
-        Cliente cliente = service.loginComGoogle(email, nome);
 
         return ResponseEntity.ok(cliente);
     }

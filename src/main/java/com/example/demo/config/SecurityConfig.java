@@ -60,7 +60,7 @@ public class SecurityConfig {
                         .anyRequest().authenticated())
 
                 .oauth2Login(oauth -> oauth
-                        .defaultSuccessUrl("http://localhost:3000/login", true));
+                        .defaultSuccessUrl("http://localhost:3000/dashboard", true));
 
         return http.build();
     }
