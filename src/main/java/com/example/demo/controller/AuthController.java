@@ -24,7 +24,7 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Login login, HttpSession session) {
-        try {
+        try {   
             Cliente cliente = authService.verificarLogin(login);
 
             session.setAttribute("usuarioLogado", cliente);

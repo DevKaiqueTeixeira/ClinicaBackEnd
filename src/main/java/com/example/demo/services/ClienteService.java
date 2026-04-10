@@ -68,7 +68,7 @@ public class ClienteService {
             return clienteExistente.get();
         }
 
-        Cliente novo = new Cliente.Builder()
+        Cliente cliente = new Cliente.Builder()
                 .nome(nome)
                 .email(email)
                 .cpf("GOOGLE_" + email)
@@ -76,6 +76,7 @@ public class ClienteService {
                 .telefone(null)
                 .build();
 
-        return clienteDAO.salvar(novo);
+        return clienteDAO.salvar(cliente);
     }
+
 }
