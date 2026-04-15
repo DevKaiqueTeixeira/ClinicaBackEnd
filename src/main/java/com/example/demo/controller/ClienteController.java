@@ -44,4 +44,22 @@ public class ClienteController {
 
         return ResponseEntity.ok(cliente);
     }
+
+    @PutMapping("/atualizarCliente/{id}")
+    public ResponseEntity<?> atualizarCliente(@PathVariable Long id, @RequestBody Cliente dadosAtualizados) {
+        try {
+            Cliente salvo = service.atualizarCliente(id, dadosAtualizados);
+            return ResponseEntity.ok(salvo);
+        } catch (RuntimeException e) {
+            HttpStatus status = e.getMessage() != null && e.getMessage().contains("não encontrado")
+                    ? HttpStatus.NOT_FOUND
+                    : HttpStatus.CONFLICT;
+
+            return ResponseEntity.status(status)
+                    .body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Erro ao atualizar cliente");
+        }
+    }
 }

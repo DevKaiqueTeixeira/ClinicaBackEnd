@@ -25,11 +25,19 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Login login, HttpSession session) {
         try {   
-            Cliente cliente = authService.verificarLogin(login);
+            Login loginRequest = new Login.Builder()
+                    .email(login.getEmail())
+                    .senha(login.getSenha())
+                    .build();
+
+            Cliente cliente = authService.verificarLogin(loginRequest);
 
             session.setAttribute("usuarioLogado", cliente);
 
             return ResponseEntity.ok(cliente);
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
 
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());

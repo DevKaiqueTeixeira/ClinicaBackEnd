@@ -56,6 +56,33 @@ public class ClienteService {
         return clienteDAO.salvar(novoCliente);
     }
 
+    public Cliente atualizarCliente(Long id, Cliente dadosAtualizados) {
+        Cliente clienteExistente = clienteDAO.buscarPorId(id)
+                .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
+
+        String cpfAtualizado = dadosAtualizados.getCpf() != null
+                ? dadosAtualizados.getCpf()
+                : clienteExistente.getCpf();
+
+        if (clienteDAO.existeCpfParaOutroId(cpfAtualizado, id)) {
+            throw new RuntimeException("CPF já cadastrado para outro cliente");
+        }
+
+        Cliente clienteAtualizado = new Cliente.Builder()
+                .nome(dadosAtualizados.getNome() != null ? dadosAtualizados.getNome() : clienteExistente.getNome())
+                .cpf(cpfAtualizado)
+                .telefone(dadosAtualizados.getTelefone() != null ? dadosAtualizados.getTelefone() : clienteExistente.getTelefone())
+                .email(clienteExistente.getEmail())
+                .senha(clienteExistente.getSenha())
+                .build();
+
+        return clienteDAO.atualizarCampos(
+                id,
+                clienteAtualizado.getNome(),
+                clienteAtualizado.getCpf(),
+                clienteAtualizado.getTelefone());
+    }
+
     public Iterable<Cliente> listar() {
         return clienteDAO.listarTodos();
     }

@@ -1,8 +1,8 @@
 package com.example.demo.services;
 
 import com.example.demo.Auth.Login;
+import com.example.demo.DAO.ClienteDAO;
 import com.example.demo.model.Cliente;
-import com.example.demo.repository.ClienteRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -11,16 +11,16 @@ import java.util.Optional;
 @Service
 public class AuthService {
 
-    private final ClienteRepository clienteRepository;
+    private final ClienteDAO clienteDAO;
     private final PasswordEncoder passwordEncoder;
 
-    public AuthService(ClienteRepository clienteRepository, PasswordEncoder passwordEncoder) {
-        this.clienteRepository = clienteRepository;
+    public AuthService(ClienteDAO clienteDAO, PasswordEncoder passwordEncoder) {
+        this.clienteDAO = clienteDAO;
         this.passwordEncoder = passwordEncoder;
     }
 
     public Cliente verificarLogin(Login login) {
-        Optional<Cliente> clienteOpt = clienteRepository.findByEmail(login.getEmail());
+        Optional<Cliente> clienteOpt = clienteDAO.buscarPorEmail(login.getEmail());
 
         if (clienteOpt.isEmpty()) {
             throw new RuntimeException("Usuário não encontrado");
