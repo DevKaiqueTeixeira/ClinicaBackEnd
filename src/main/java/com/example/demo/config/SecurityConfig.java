@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -49,6 +50,7 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(
                                 "/",
                                 "/login",
@@ -57,7 +59,15 @@ public class SecurityConfig {
                                 "/login/oauth2/**",
                                 "/clientes/user",
                                 "/clientes",
-                                "/enderecos")
+                                "/clientes/**",
+                                "/enderecos",
+                                "/enderecos/**",
+                                "/pets",
+                                "/pets/**",
+                                "/agendamentos",
+                                "/agendamentos/**",
+                                "/receitas",
+                                "/receitas/**")
                         .permitAll()
                         .anyRequest().authenticated())
                 .oauth2Login(oauth -> oauth
@@ -88,8 +98,7 @@ public class SecurityConfig {
 // import org.springframework.context.annotation.Bean;
 // import org.springframework.context.annotation.Configuration;
 
-// import
-// org.springframework.security.config.annotation.web.builders.HttpSecurity;
+// import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 // import org.springframework.security.web.SecurityFilterChain;
 
 // import org.springframework.web.cors.CorsConfiguration;
@@ -103,44 +112,44 @@ public class SecurityConfig {
 // @Configuration
 // public class SecurityConfig {
 
-// @Bean
-// public CorsConfigurationSource corsConfigurationSource() {
-// CorsConfiguration config = new CorsConfiguration();
+//     @Bean
+//     public CorsConfigurationSource corsConfigurationSource() {
+//         CorsConfiguration config = new CorsConfiguration();
 
-// // Troquei para a porta 9000
-// config.setAllowedOrigins(List.of("http://localhost:9000"));
-// config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-// config.setAllowedHeaders(List.of("*"));
-// config.setAllowCredentials(true);
+//         // Troquei para a porta 9000
+//         config.setAllowedOrigins(List.of("http://localhost:9000"));
+//         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+//         config.setAllowedHeaders(List.of("*"));
+//         config.setAllowCredentials(true);
 
-// UrlBasedCorsConfigurationSource source = new
-// UrlBasedCorsConfigurationSource();
-// source.registerCorsConfiguration("/**", config);
+//         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+//         source.registerCorsConfiguration("/**", config);
 
-// return source;
-// }
+//         return source;
+//     }
 
-// @Bean
-// public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-// http
-// .cors(cors -> {
-// })
-// .csrf(csrf -> csrf.disable())
-// .authorizeHttpRequests(auth -> auth
-// .requestMatchers(
-// "/",
-// "/login",
-// "/auth/**",
-// "/oauth2/**",
-// "/clientes/user",
-// "/vueTJ/**",
-// "/tickets/**" // adiciona seus endpoints de cadastro
-// ).permitAll()
-// .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // permite preflight
-// .anyRequest().authenticated())
-// .oauth2Login(oauth -> oauth
-// .defaultSuccessUrl("http://localhost:9000/dashboard", true));
+//     @Bean
+//     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+//         http
+//                 .cors(cors -> {
+//                 })
+//                 .csrf(csrf -> csrf.disable())
+//                 .authorizeHttpRequests(auth -> auth
+//                         .requestMatchers(
+//                                 "/",
+//                                 "/login",
+//                                 "/auth/**",
+//                                 "/oauth2/**",
+//                                 "/clientes/user",
+//                                 "/vueTJ/**",
+//                                 "/tickets/**"
+//                         // adiciona seus endpoints de cadastro
+//                         ).permitAll()
+//                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // permite preflight
+//                         .anyRequest().authenticated())
+//                 .oauth2Login(oauth -> oauth
+//                         .defaultSuccessUrl("http://localhost:9000/dashboard", true));
 
-// return http.build();
-// }
+//         return http.build();
+//     }
 // }
